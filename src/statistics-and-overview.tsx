@@ -1,5 +1,90 @@
-import { Detail } from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, Keyboard } from "@raycast/api";
+import { useLanguages } from "./hooks/useLanguages";
+import { formatedDate } from "./utils/formating";
+import { useNotebook } from "./hooks/useNotebook";
+import { getTodayCount, getWeekCount } from "./utils/statistics";
+import { getColor } from "./utils/colors";
+import { useCachedState } from "@raycast/utils";
+import { ImportForm } from "./components/ImportForm";
+import { addEntry } from "./data/data";
+import { ExportForm } from "./components/ExportForm";
 
 export default function Command() {
-  return <Detail markdown="# Hello World" />;
+  const { languages } = useLanguages();
+  const [selectedLanguageId, setSelectedLanguageId] = useCachedState<string>("stat-lang", languages[0]?.id ?? "");
+  const { entries, refresh: refreshEntries } = useNotebook(selectedLanguageId);
+
+  const markdown = [
+    `\`${languages.find((l) => l.id === selectedLanguageId)?.name ?? ""}\`\n`,
+    "```",
+    `Total Count: ${entries.length.toString()}; Total Today: ${getTodayCount(entries).toString()}; Total This Week: ${getWeekCount(entries).toString()}\n`,
+    entries.map((e) => `${formatedDate(e.timestamp)} | ${e.word} - ${e.translation}`).join("\n"),
+    "```",
+  ].join("\n");
+
+  return (
+    <Detail
+      isLoading={entries === undefined}
+      markdown={markdown}
+      actions={
+        <ActionPanel>
+          <ActionPanel.Section title="Language">
+            {languages.map((language, index) => (
+              <Action
+                key={language.id}
+                title={language.name}
+                icon={{ source: Icon.Dot, tintColor: getColor(language.color) }}
+                onAction={() => setSelectedLanguageId(language.id)}
+                shortcut={
+                  index < 5 ? { modifiers: ["cmd"], key: String(index + 1) as Keyboard.KeyEquivalent } : undefined
+                }
+              />
+            ))}
+          </ActionPanel.Section>
+          <ActionPanel.Section title="Actions">
+            <Action.Push
+              title="Import from File"
+              icon={Icon.Download}
+              shortcut={{ modifiers: ["cmd"], key: "i" }}
+              target={
+                <ImportForm
+                  onImport={(content) => {
+                    const lines = content.split("\n").filter((l) => l.trim());
+                    for (const line of lines) {
+                      const parts = line.split("|");
+                      if (parts.length < 2) continue;
+
+                      const timestamp = new Date(parts[0].trim()).getTime();
+                      const [word, translation] = parts[1]
+                        .trim()
+                        .split(" - ")
+                        .map((s) => s.trim());
+                      if (!word || !translation) continue;
+                      try {
+                        addEntry(word, translation, selectedLanguageId, timestamp);
+                      } catch {
+                        /* duplicate */
+                      }
+                    }
+                    refreshEntries();
+                  }}
+                />
+              }
+            />
+            <Action.Push
+              title="Export"
+              icon={Icon.Upload}
+              shortcut={{ modifiers: ["cmd"], key: "e" }}
+              target={
+                <ExportForm
+                  languageName={languages.find((l) => l.id === selectedLanguageId)?.name ?? "notebook"}
+                  content={entries.map((e) => `${formatedDate(e.timestamp)} | ${e.word} - ${e.translation}`).join("\n")}
+                />
+              }
+            />
+          </ActionPanel.Section>
+        </ActionPanel>
+      }
+    />
+  );
 }

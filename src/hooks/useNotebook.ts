@@ -1,0 +1,18 @@
+// src/hooks/useNotebook.ts
+import { useState, useEffect } from "react";
+import { NotebookEntry } from "../data/types";
+import { getNotebook } from "../data/data";
+
+export function useNotebook(languageId: string) {
+  const [entries, setEntries] = useState<NotebookEntry[]>(() => getNotebook(languageId));
+
+  useEffect(() => {
+    setEntries(getNotebook(languageId));
+  }, [languageId]);
+
+  function refresh() {
+    setEntries(getNotebook(languageId));
+  }
+
+  return { entries, refresh };
+}

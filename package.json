@@ -18,26 +18,63 @@
   "commands": [
     {
       "name": "search-words",
-      "title": "Search Words",
+      "title": "Search and Manage Words",
       "subtitle": "Vocabulary Builder",
       "description": "View and manage all words",
       "mode": "view"
     },
     {
+      "name": "manage-languages",
+      "title": "Manage Languages",
+      "subtitle": "Vocabulary Builder",
+      "description": "Add, edit and delete your languages",
+      "mode": "view"
+    }
+      ,
+    {
       "name": "statistics-and-overview",
       "title": "Statistics and Overview",
       "subtitle": "Vocabulary Builder",
-      "description": "See statistics for your inputs and see all the words",
-      "mode": "view"
-    },
-    {
-      "name": "add-new-language",
-      "title": "Add New Language",
-      "subtitle": "Vocabulary Builder",
-      "description": "Add a new language to group by words",
+      "description": "See statistics for your inputs and overview of all the words per language",
       "mode": "view"
     }
-  ],
+      ,
+    {
+      "name": "quick-add",
+      "title": "Quick Add",
+      "subtitle": "Vocabulary Builder",
+      "description": "Add new words quickly",
+      "mode": "no-view",
+      "preferences": [
+        {
+          "name": "defaultLanguage",
+          "type": "textfield",
+          "title": "Default Language",
+          "description": "Set a default language for quick adding words",
+          "placeholder": "Default Language (e.g. es)"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "word",
+          "type": "text",
+          "placeholder": "Word",
+          "required": true
+        },
+        {
+          "name": "translation",
+          "type": "text",
+          "placeholder": "Translation",
+          "required": true
+        },
+        {
+          "name": "language",
+          "type": "text",
+          "placeholder": "Language (e.g. es)"
+        }
+      ]
+    }
+      ],
   "dependencies": {
     "@raycast/api": "^1.104.18",
     "@raycast/utils": "^1.17.0"

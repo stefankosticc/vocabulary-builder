@@ -1,76 +1,133 @@
-import { ActionPanel, Action, Icon, List, Color } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, Color, showToast, Toast } from "@raycast/api";
 import { useCachedState } from "@raycast/utils";
-
-const ITEMS = Array.from(Array(3).keys()).map((key) => {
-  return {
-    id: key,
-    icon: Icon.Bird,
-    title: "Title " + key,
-    subtitle: "Subtitle",
-    accessory: "Accessory",
-    language: key === 0 ? "Spanish" : "French",
-  };
-});
-
-type LanguageType = { id: string; name: string; color: Color };
-
-function LanguageDropdown(props: { languageTypes: LanguageType[]; onLanguageTypeChange: (newValue: string) => void }) {
-  const { languageTypes: languageTypes, onLanguageTypeChange: onLanguageTypeChange } = props;
-  return (
-    <List.Dropdown
-      tooltip="Select Language"
-      storeValue={true}
-      onChange={(newValue) => {
-        onLanguageTypeChange(newValue);
-      }}
-      defaultValue={languageTypes[1].name}
-    >
-      <List.Dropdown.Section title="Language Notebooks">
-        {languageTypes.map((languageType) => (
-          <List.Dropdown.Item
-            key={languageType.id}
-            title={languageType.name}
-            value={languageType.name}
-            icon={{ source: Icon.Circle, tintColor: languageType.color }}
-          />
-        ))}
-      </List.Dropdown.Section>
-    </List.Dropdown>
-  );
-}
+import { deleteEntry } from "./data/data";
+import { getColor } from "./utils/colors";
+import { LanguageDropdown } from "./components/LanguageDropdown";
+import LanguageForm from "./components/LanguageForm";
+import { AddWordAction } from "./components/AddWordAction";
+import { useState } from "react";
+import { formatedDate } from "./utils/formating";
+import { useNotebook } from "./hooks/useNotebook";
+import EntryForm from "./components/EntryForm";
+import { useLanguages } from "./hooks/useLanguages";
 
 export default function Command() {
-  const languageTypes: LanguageType[] = [
-    { id: "1", name: "Spanish", color: Color.Orange },
-    { id: "2", name: "French", color: Color.Blue },
-  ];
+  const { languages } = useLanguages();
+  const [selectedLanguage, setSelectedLanguage] = useCachedState<string>("selected-language", languages[0]?.id ?? "");
+  const [searchText, setSearchText] = useState("");
 
-  const [selectedLanguage, setSelectedLanguage] = useCachedState<string>("Spanish", "Spanish");
+  const { entries, refresh: refreshEntries } = useNotebook(selectedLanguage);
 
-  const filteredItems = ITEMS.filter((item) => item.language === selectedLanguage);
+  async function handleDeleteEntry(id: string) {
+    try {
+      deleteEntry(id);
+      refreshEntries();
+      await showToast({ style: Toast.Style.Success, title: "Word successfully deleted" });
+    } catch (e) {
+      await showToast({ style: Toast.Style.Failure, title: (e as Error).message });
+    }
+  }
+
+  if (languages.length === 0) {
+    return (
+      <List>
+        <List.EmptyView
+          title="No languages found"
+          description="Add a language first to start building your vocabulary notebook!"
+          icon={{ source: Icon.ExclamationMark, tintColor: Color.SecondaryText }}
+          actions={
+            <ActionPanel>
+              <Action.Push title="Add New Language" target={<LanguageForm mode="add" />} />
+            </ActionPanel>
+          }
+        />
+      </List>
+    );
+  }
 
   return (
     <List
-      searchBarAccessory={<LanguageDropdown languageTypes={languageTypes} onLanguageTypeChange={setSelectedLanguage} />}
+      isLoading={entries === undefined}
+      filtering={true}
+      throttle={true}
+      onSearchTextChange={setSearchText}
+      searchBarAccessory={<LanguageDropdown languages={languages} onLanguageChange={setSelectedLanguage} />}
     >
-      <List.Section title={"Total count: " + filteredItems.length}>
-        {filteredItems.map((item) => (
+      {searchText.trim() && (
+        <List.Section title="Actions">
           <List.Item
-            key={item.id}
-            icon={item.icon}
-            title={item.title}
-            subtitle={item.subtitle}
-            accessories={[{ icon: Icon.Text, text: item.accessory }, { tag: item.language }]}
+            title={`Add "${searchText}"`}
+            icon={Icon.Plus}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard content={item.title} />
+                <AddWordAction
+                  submition={searchText}
+                  selectedLanguageId={selectedLanguage}
+                  onRefresh={refreshEntries}
+                />
               </ActionPanel>
             }
           />
-        ))}
-        <List.Item title="2026-03-11 12:38:20 | remolacha - beet"></List.Item>
-        <List.Item title="2026-03-11 12:38:20 | cangrejos - crabs"></List.Item>
-      </List.Section>
+        </List.Section>
+      )}
+
+      {entries.length === 0 ? (
+        <List.EmptyView
+          title="No words found"
+          description="Add some words to your notebook!"
+          icon={{ source: Icon.List, tintColor: Color.SecondaryText }}
+          actions={
+            <ActionPanel>
+              <AddWordAction submition={searchText} selectedLanguageId={selectedLanguage} onRefresh={refreshEntries} />
+            </ActionPanel>
+          }
+        />
+      ) : (
+        <List.Section title={"Total count: " + entries.length}>
+          {entries.map((entry) => {
+            const language = languages.find((l) => l.id === entry.languageId);
+
+            return (
+              <List.Item
+                key={entry.id}
+                title={`${entry.word} - ${entry.translation}`}
+                subtitle={formatedDate(entry.timestamp)}
+                accessories={[
+                  {
+                    tag: {
+                      value: language?.abbreviation ? language.abbreviation : language?.name,
+                      color: getColor(language?.color ?? "") as Color.ColorLike,
+                    },
+                  },
+                ]}
+                actions={
+                  <ActionPanel>
+                    <Action.CopyToClipboard title="Copy Word" content={entry.word} />
+                    <AddWordAction
+                      submition={searchText}
+                      selectedLanguageId={selectedLanguage}
+                      onRefresh={refreshEntries}
+                    />
+                    <Action.Push
+                      title="Edit"
+                      icon={Icon.Pencil}
+                      target={<EntryForm initial={entry} onRefresh={refreshEntries} />}
+                      shortcut={{ modifiers: ["cmd"], key: "e" }}
+                    />
+                    <Action
+                      title="Delete"
+                      icon={Icon.Trash}
+                      onAction={() => handleDeleteEntry(entry.id)}
+                      style={Action.Style.Destructive}
+                      shortcut={{ modifiers: ["cmd"], key: "d" }}
+                    />
+                  </ActionPanel>
+                }
+              />
+            );
+          })}
+        </List.Section>
+      )}
     </List>
   );
 }
