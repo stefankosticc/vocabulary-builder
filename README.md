@@ -2,21 +2,14 @@
 
 This extension lets you grow your vocabulary across multiple languages. Add words instantly, browse your notebooks, and keep track of your progress.
 
-## Table of Contents
-
-- [Commands](#commands)
-- [Adding Words](#adding-words)
-- [Import & Export](#import--export)
-- [How I Use It](#how-i-use-it)
-
 ## Commands
 
-| Command                 | Description                                             |
-| ----------------------- | ------------------------------------------------------- |
-| Search and Manage Words | Browse, search, edit and delete words in your notebook  |
-| Quick Add               | Add a new word                                          |
-| Manage Languages        | Create and manage your languages                        |
-| Statistics and Overview | View word counts and overview of all words per language |
+| Command                 | Description                                                                  |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| Search and Manage Words | Browse, search, edit and delete words in your notebook                       |
+| Quick Add               | Add a word by entering word, translation, and language directly as arguments |
+| Manage Languages        | Create and manage your languages                                             |
+| Statistics and Overview | View word counts and overview of all words per language                      |
 
 ## Adding Words
 
@@ -26,7 +19,7 @@ This extension lets you grow your vocabulary across multiple languages. Add word
 
 ## Import & Export
 
-Notebooks can be exported as a `.txt` file - you'll be prompted to choose a folder and the file will be saved to a choosen location. Each line follows this format:
+Notebooks can be exported as a `.txt` file - you'll be prompted to choose a folder and the file will be saved to a chosen location. Each line follows this format:
 
 ```
 2026-05-28 12:00:00 AM | bonjour - hello
@@ -35,7 +28,7 @@ Notebooks can be exported as a `.txt` file - you'll be prompted to choose a fold
 
 To import, select any `.txt` file in the same format. Duplicates are skipped automatically and original timestamps are preserved.
 
-## How I Use It
+## Tips
 
 1. Install the [Google Translate](https://www.raycast.com/gebeto/translate) extension and set up `Quick Translate` for your target language
 

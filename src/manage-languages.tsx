@@ -1,8 +1,9 @@
-import { ActionPanel, Action, Icon, List, showToast, Toast, Color, confirmAlert, Alert } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, showToast, Toast, confirmAlert, Alert } from "@raycast/api";
 import { deleteLanguage } from "./data/data";
 import LanguageForm from "./components/LanguageForm";
 import { getColor } from "./utils/colors";
 import { useLanguages } from "./hooks/useLanguages";
+import { EmptyLanguagesView } from "./components/EmptyLanguagesView";
 
 export default function Command() {
   const { languages, refresh } = useLanguages();
@@ -29,26 +30,7 @@ export default function Command() {
   }
 
   if (languages.length === 0) {
-    return (
-      <List>
-        <List.EmptyView
-          title="No languages found"
-          description="Add a language by pressing Enter or Cmd+N"
-          icon={{ source: Icon.ExclamationMark, tintColor: Color.SecondaryText }}
-          actions={
-            <ActionPanel>
-              <Action.Push
-                title="Add New Language"
-                icon={Icon.PlusSquare}
-                target={<LanguageForm mode="add" />}
-                shortcut={{ modifiers: ["cmd"], key: "n" }}
-                onPop={refresh}
-              />
-            </ActionPanel>
-          }
-        />
-      </List>
-    );
+    return <EmptyLanguagesView onLanguageAdded={refresh} />;
   }
 
   return (

@@ -3,7 +3,7 @@ import { getColor } from "../utils/colors";
 import { Language } from "../data/types";
 
 export function LanguageDropdown(props: { languages: Language[]; onLanguageChange: (newValue: string) => void }) {
-  const { languages, onLanguageChange: onLanguageChange } = props;
+  const { languages, onLanguageChange } = props;
   return (
     <List.Dropdown
       tooltip="Select Language"

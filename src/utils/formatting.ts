@@ -1,4 +1,4 @@
-export function formatedDate(date: number): string {
+export function formattedDate(date: number): string {
   return new Date(date)
     .toLocaleString("en-US", {
       year: "numeric",

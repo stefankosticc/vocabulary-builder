@@ -9,11 +9,11 @@ type ParsedSubmission = {
 };
 
 export function AddWordAction({
-  submition,
+  submission: submission,
   selectedLanguageId,
   onRefresh,
 }: {
-  submition: string;
+  submission: string;
   selectedLanguageId?: string;
   onRefresh?: () => void;
 }) {
@@ -33,7 +33,7 @@ export function AddWordAction({
 
   async function handleSubmit() {
     try {
-      const { word, translation, languageAbbreviation } = parseSubmission(submition);
+      const { word, translation, languageAbbreviation } = parseSubmission(submission);
 
       let languageId = selectedLanguageId;
 

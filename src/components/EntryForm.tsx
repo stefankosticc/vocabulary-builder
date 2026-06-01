@@ -12,9 +12,9 @@ type Props = {
   onRefresh?: () => void;
 };
 
-export default function EntryForm({ initial, onRefresh }: Props) {
+export function EntryForm({ initial, onRefresh }: Props) {
   const { handleSubmit, itemProps } = useForm<Values>({
-    onSubmit(values) {
+    async onSubmit(values) {
       try {
         if (!initial) throw new Error("Entry is not selected for editing");
         updateEntry(initial.id, {
@@ -22,9 +22,9 @@ export default function EntryForm({ initial, onRefresh }: Props) {
           translation: values.translation.trim(),
         });
         onRefresh?.();
-        showToast({ style: Toast.Style.Success, title: "Success", message: `${values.word} entry updated` });
+        await showToast({ style: Toast.Style.Success, title: "Success", message: `${values.word} entry updated` });
       } catch (e) {
-        showToast({ style: Toast.Style.Failure, title: (e as Error).message });
+        await showToast({ style: Toast.Style.Failure, title: (e as Error).message });
       }
     },
     initialValues: {

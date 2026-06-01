@@ -1,6 +1,6 @@
 import { Action, ActionPanel, Detail, Icon, Keyboard } from "@raycast/api";
 import { useLanguages } from "./hooks/useLanguages";
-import { formatedDate } from "./utils/formating";
+import { formattedDate } from "./utils/formatting";
 import { useNotebook } from "./hooks/useNotebook";
 import { getTodayCount, getWeekCount } from "./utils/statistics";
 import { getColor } from "./utils/colors";
@@ -8,9 +8,11 @@ import { useCachedState } from "@raycast/utils";
 import { ImportForm } from "./components/ImportForm";
 import { addEntry } from "./data/data";
 import { ExportForm } from "./components/ExportForm";
+import { EmptyLanguagesView } from "./components/EmptyLanguagesView";
+import { useEffect } from "react";
 
 export default function Command() {
-  const { languages } = useLanguages();
+  const { languages, refresh: refreshLanguages } = useLanguages();
   const [selectedLanguageId, setSelectedLanguageId] = useCachedState<string>("stat-lang", languages[0]?.id ?? "");
   const { entries, refresh: refreshEntries } = useNotebook(selectedLanguageId);
 
@@ -18,9 +20,19 @@ export default function Command() {
     `\`${languages.find((l) => l.id === selectedLanguageId)?.name ?? ""}\`\n`,
     "```",
     `Total Count: ${entries.length.toString()}; Total Today: ${getTodayCount(entries).toString()}; Total This Week: ${getWeekCount(entries).toString()}\n`,
-    entries.map((e) => `${formatedDate(e.timestamp)} | ${e.word} - ${e.translation}`).join("\n"),
+    entries.map((e) => `${formattedDate(e.timestamp)} | ${e.word} - ${e.translation}`).join("\n"),
     "```",
   ].join("\n");
+
+  useEffect(() => {
+    if (languages.find((l) => l.id === selectedLanguageId) === undefined && languages.length > 0) {
+      setSelectedLanguageId(languages[0].id);
+    }
+  }, [languages]);
+
+  if (languages.length === 0) {
+    return <EmptyLanguagesView onLanguageAdded={refreshLanguages} />;
+  }
 
   return (
     <Detail
@@ -78,7 +90,9 @@ export default function Command() {
               target={
                 <ExportForm
                   languageName={languages.find((l) => l.id === selectedLanguageId)?.name ?? "notebook"}
-                  content={entries.map((e) => `${formatedDate(e.timestamp)} | ${e.word} - ${e.translation}`).join("\n")}
+                  content={entries
+                    .map((e) => `${formattedDate(e.timestamp)} | ${e.word} - ${e.translation}`)
+                    .join("\n")}
                 />
               }
             />

@@ -6,9 +6,9 @@ import { LanguageDropdown } from "./components/LanguageDropdown";
 import LanguageForm from "./components/LanguageForm";
 import { AddWordAction } from "./components/AddWordAction";
 import { useState } from "react";
-import { formatedDate } from "./utils/formating";
+import { formattedDate } from "./utils/formatting";
 import { useNotebook } from "./hooks/useNotebook";
-import EntryForm from "./components/EntryForm";
+import { EntryForm } from "./components/EntryForm";
 import { useLanguages } from "./hooks/useLanguages";
 
 export default function Command() {
@@ -61,7 +61,7 @@ export default function Command() {
             actions={
               <ActionPanel>
                 <AddWordAction
-                  submition={searchText}
+                  submission={searchText}
                   selectedLanguageId={selectedLanguage}
                   onRefresh={refreshEntries}
                 />
@@ -78,7 +78,7 @@ export default function Command() {
           icon={{ source: Icon.List, tintColor: Color.SecondaryText }}
           actions={
             <ActionPanel>
-              <AddWordAction submition={searchText} selectedLanguageId={selectedLanguage} onRefresh={refreshEntries} />
+              <AddWordAction submission={searchText} selectedLanguageId={selectedLanguage} onRefresh={refreshEntries} />
             </ActionPanel>
           }
         />
@@ -91,7 +91,7 @@ export default function Command() {
               <List.Item
                 key={entry.id}
                 title={`${entry.word} - ${entry.translation}`}
-                subtitle={formatedDate(entry.timestamp)}
+                subtitle={formattedDate(entry.timestamp)}
                 accessories={[
                   {
                     tag: {
@@ -104,7 +104,7 @@ export default function Command() {
                   <ActionPanel>
                     <Action.CopyToClipboard title="Copy Word" content={entry.word} />
                     <AddWordAction
-                      submition={searchText}
+                      submission={searchText}
                       selectedLanguageId={selectedLanguage}
                       onRefresh={refreshEntries}
                     />

@@ -5,7 +5,6 @@ export default async function main(props: LaunchProps<{ arguments: Arguments.Qui
   const { word, translation, language } = props.arguments;
   const preferences = getPreferenceValues<Preferences.QuickAdd>();
   const languageAbbreviation = language || preferences.defaultLanguage;
-  console.log("Received input:", { word, translation, languageAbbreviation });
 
   try {
     if (word.trim() === "") {
