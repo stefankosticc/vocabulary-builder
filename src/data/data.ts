@@ -27,12 +27,11 @@ function readData(): Data {
 }
 
 function writeData(data: Data): void {
-  cache = data;
-
   const tmp = DATA_PATH + ".tmp";
   fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
   fs.writeFileSync(tmp, JSON.stringify(data));
   fs.renameSync(tmp, DATA_PATH);
+  cache = data;
 }
 
 // LANGUAGE FUNCTIONS
