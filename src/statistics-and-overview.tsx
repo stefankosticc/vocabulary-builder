@@ -95,7 +95,7 @@ export default function Command() {
                 <ExportForm
                   languageName={languages.find((l) => l.id === selectedLanguageId)?.name ?? "notebook"}
                   content={entries
-                    .map((e) => `${formattedDate(e.timestamp)} | ${e.word} - ${e.translation}`)
+                    .map((e) => `${new Date(e.timestamp).toISOString()} | ${e.word} - ${e.translation}`)
                     .join("\n")}
                 />
               }
