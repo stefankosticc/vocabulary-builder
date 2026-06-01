@@ -71,7 +71,10 @@ export default function Command() {
                       const splitIdx = parts[1].trim().indexOf(" - ");
                       if (splitIdx === -1) continue;
                       const word = parts[1].trim().slice(0, splitIdx).trim();
-                      const translation = parts[1].trim().slice(splitIdx + 3).trim();
+                      const translation = parts[1]
+                        .trim()
+                        .slice(splitIdx + 3)
+                        .trim();
                       if (!word || !translation) continue;
                       try {
                         addEntry(word, translation, selectedLanguageId, timestamp);
