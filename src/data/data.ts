@@ -20,9 +20,12 @@ function readData(): Data {
     const raw = fs.readFileSync(DATA_PATH, "utf-8");
     cache = JSON.parse(raw) as Data;
     return cache;
-  } catch {
-    // File doesn't exist yet - return default
-    return structuredClone(DEFAULT_DATA);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+      // File doesn't exist yet - return default
+      return structuredClone(DEFAULT_DATA);
+    }
+    throw e;
   }
 }
 
