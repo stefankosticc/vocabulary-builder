@@ -1,4 +1,4 @@
-import { Form, ActionPanel, Action, showToast, Icon, Toast } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, Icon, Toast, useNavigation } from "@raycast/api";
 import { COLOR_KEYS, COLOR_MAP } from "../utils/colors";
 import { useForm, FormValidation } from "@raycast/utils";
 import { addLanguage, updateLanguage } from "../data/data";
@@ -15,6 +15,8 @@ type Props = {
 };
 
 export default function LanguageForm({ mode, initial }: Props) {
+  const { pop } = useNavigation();
+
   const { handleSubmit, itemProps } = useForm<Values>({
     async onSubmit(values) {
       try {
@@ -30,6 +32,7 @@ export default function LanguageForm({ mode, initial }: Props) {
           });
           await showToast({ style: Toast.Style.Success, title: "Success", message: `${values.name} language updated` });
         }
+        pop();
       } catch (e) {
         await showToast({ style: Toast.Style.Failure, title: (e as Error).message });
       }

@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Form, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Form, showToast, Toast, useNavigation } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 import { updateEntry } from "../data/data";
 
@@ -13,6 +13,8 @@ type Props = {
 };
 
 export function EntryForm({ initial, onRefresh }: Props) {
+  const { pop } = useNavigation();
+
   const { handleSubmit, itemProps } = useForm<Values>({
     async onSubmit(values) {
       try {
@@ -23,6 +25,7 @@ export function EntryForm({ initial, onRefresh }: Props) {
         });
         onRefresh?.();
         await showToast({ style: Toast.Style.Success, title: "Success", message: `${values.word} entry updated` });
+        pop();
       } catch (e) {
         await showToast({ style: Toast.Style.Failure, title: (e as Error).message });
       }
