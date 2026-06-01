@@ -47,9 +47,9 @@ export default function Command() {
 
   return (
     <List
-      isLoading={entries === undefined}
       filtering={true}
       throttle={true}
+      isLoading={entries === undefined}
       onSearchTextChange={setSearchText}
       searchBarAccessory={<LanguageDropdown languages={languages} onLanguageChange={setSelectedLanguage} />}
     >

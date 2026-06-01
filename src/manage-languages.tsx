@@ -34,7 +34,7 @@ export default function Command() {
   }
 
   return (
-    <List isLoading={languages === undefined} searchBarPlaceholder="Search languages...">
+    <List searchBarPlaceholder="Search languages...">
       {languages.map((language) => (
         <List.Item
           key={language.id}
