@@ -51,7 +51,8 @@
           "type": "textfield",
           "title": "Default Language",
           "description": "Set a default language for quick adding words",
-          "placeholder": "Default Language (e.g. es)"
+          "placeholder": "Default Language (e.g. es)",
+          "required": false
         }
       ],
       "arguments": [
