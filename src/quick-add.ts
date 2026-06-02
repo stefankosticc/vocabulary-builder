@@ -21,7 +21,9 @@ export default async function main(props: LaunchProps<{ arguments: Arguments.Qui
 
     const languages = getLanguages();
     const languageEntry = languages.find(
-      (l) => l.abbreviation === languageAbbreviation || l.name === languageAbbreviation,
+      (l) =>
+        l.abbreviation?.toLowerCase() === languageAbbreviation.toLowerCase() ||
+        l.name.toLowerCase() === languageAbbreviation.toLowerCase(),
     );
 
     if (!languageEntry && !language)

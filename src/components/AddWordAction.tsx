@@ -46,7 +46,7 @@ export function AddWordAction({
       }
 
       if (languageAbbreviation) {
-        const language = languages.find((l) => l.abbreviation === languageAbbreviation);
+        const language = languages.find((l) => l.abbreviation?.toLowerCase() === languageAbbreviation.toLowerCase());
         if (!language) throw new Error(`Language "${languageAbbreviation}" not found.`);
         languageId = language.id;
       }
