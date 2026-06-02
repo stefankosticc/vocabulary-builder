@@ -12,7 +12,7 @@ import { EntryForm } from "./components/EntryForm";
 import { useLanguages } from "./hooks/useLanguages";
 
 export default function Command() {
-  const { languages } = useLanguages();
+  const { languages, refresh: refreshLanguages } = useLanguages();
   const [selectedLanguage, setSelectedLanguage] = useCachedState<string>("selected-language", languages[0]?.id ?? "");
   const [searchText, setSearchText] = useState("");
 
@@ -37,7 +37,14 @@ export default function Command() {
           icon={{ source: Icon.ExclamationMark, tintColor: Color.SecondaryText }}
           actions={
             <ActionPanel>
-              <Action.Push title="Add New Language" target={<LanguageForm mode="add" />} />
+              <Action.Push
+                title="Add New Language"
+                target={<LanguageForm mode="add" />}
+                onPop={() => {
+                  refreshLanguages();
+                  setSelectedLanguage(languages[0]?.id ?? "");
+                }}
+              />
             </ActionPanel>
           }
         />
