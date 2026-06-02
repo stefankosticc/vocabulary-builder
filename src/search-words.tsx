@@ -5,7 +5,7 @@ import { getColor } from "./utils/colors";
 import { LanguageDropdown } from "./components/LanguageDropdown";
 import LanguageForm from "./components/LanguageForm";
 import { AddWordAction } from "./components/AddWordAction";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formattedDate } from "./utils/formatting";
 import { useNotebook } from "./hooks/useNotebook";
 import { EntryForm } from "./components/EntryForm";
@@ -17,6 +17,12 @@ export default function Command() {
   const [searchText, setSearchText] = useState("");
 
   const { entries, refresh: refreshEntries } = useNotebook(selectedLanguage);
+
+  useEffect(() => {
+    if (languages.find((l) => l.id === selectedLanguage) === undefined && languages.length > 0) {
+      setSelectedLanguage(languages[0].id);
+    }
+  }, [languages]);
 
   async function handleDeleteEntry(id: string) {
     try {
@@ -37,14 +43,7 @@ export default function Command() {
           icon={{ source: Icon.ExclamationMark, tintColor: Color.SecondaryText }}
           actions={
             <ActionPanel>
-              <Action.Push
-                title="Add New Language"
-                target={<LanguageForm mode="add" />}
-                onPop={() => {
-                  refreshLanguages();
-                  setSelectedLanguage(languages[0]?.id ?? "");
-                }}
-              />
+              <Action.Push title="Add New Language" target={<LanguageForm mode="add" />} onPop={refreshLanguages} />
             </ActionPanel>
           }
         />
